@@ -1,0 +1,14 @@
+#!/system/boot/busybox sh
+# preinit environment:
+#   / is still rw
+#   /dev is devtmpfs
+#   /sys and /proc are mounted
+#   /system is mounted read-only
+#   /data is not mounted
+
+echo "preinit script framework by _that@xda"
+
+PATH=/sbin:/system/boot
+busybox run-parts /system/boot/preinit.d
+
+echo "preinit: finished - booting your operating system..."

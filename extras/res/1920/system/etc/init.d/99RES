@@ -1,0 +1,11 @@
+#!/system/bin/sh
+sleep 5
+wm density reset
+wm size reset
+
+if [ -e /data/local/tmp/init.d_res_test.txt ]; then
+	rm /data/local/tmp/init.d_res_test.txt;
+fi;
+
+touch /data/local/tmp/init.d_res_test.txt
+echo "Resolution Reset at $( date +"%m-%d-%Y %H:%M:%S" )" >> /data/local/tmp/init.d_res_test.txt

@@ -1,0 +1,64 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# detect microsd card and switch to data2sd or system2sd
+
+BB=/system/boot/busybox
+
+[ -f /fs_detected ] || { echo "preinit: init didn't detect filesystems."; exit 1; }
+. /fs_detected
+echo mmcblk0p8: $FS_mmcblk0p8
+echo mmcblk1p2: $FS_mmcblk1p2
+echo mmcblk1p3: $FS_mmcblk1p3
+
+# config
+use_data2sd=0
+use_system2sd=0
+[ -f /system/boot/preinit.cfg ] && . /system/boot/preinit.cfg
+
+# auto-detect system2sd
+dev_system=mmcblk0p1
+if [ "$use_system2sd" = "1" ] && [ -b /dev/mmcblk1p3 ]; then
+  if [ "$FS_mmcblk1p3" = "ext4" ]; then
+    echo "mmcblk1p3 detected as $FS_mmcblk1p3, setting up for System2SD."
+    $BB mkdir /systemi
+    # copy ramdisk files from external /system/boot/ramdisk to /
+    $BB mkdir /systemx
+    # TODO: improve error handling
+    $BB mount -t ext4 /dev/mmcblk1p3 /systemx || echo "failed to mount mmcblk1p3 as ext4"
+    $BB cp -a /systemx/boot/ramdisk/* / || echo "failed to copy ramdisk files from /systemx/boot/ramdisk"
+    $BB umount /systemx
+    $BB rmdir /systemx
+    dev_system=mmcblk1p3
+  else
+    echo "mmcblk1p3 detected, but not usable for System2SD (detected fs: $FS_mmcblk1p3)."
+  fi
+fi
+
+# auto-detect data2sd
+if [ "$use_data2sd" = "1" ] && [ -b /dev/mmcblk1p2 ]; then
+  if [ "$FS_mmcblk1p2" = "ext4" ] || [ "$FS_mmcblk1p2" = "f2fs" ]; then
+    echo "mmcblk1p2 detected as $FS_mmcblk1p2, setting up for Data2SD."
+    $BB mkdir /datai
+    # modify init.rc for data2sd, but only for internal /system (for ROM2SD we expect it to be already done)
+    if [ "$dev_system" = "mmcblk0p1" ]; then
+      echo "Internal /system with external /data: modifying fstab and rc files."
+      #$BB sed -i -e '/mmcblk0p8/{' -e 'h' -e 's-/data-/datai-p' -e 'g' -e 's-mmcblk0p8-mmcblk1p2-' -e '}' /fstab.cardhu
+      $BB sed -i '/mmcblk0p8/{;h;s-/data-/datai-p;g;s-mmcblk0p8-mmcblk1p2-;}' fstab.cardhu
+      for i in /*.rc; do
+        $BB sed -i 's/mmcblk0p8\([^0-9]\)/mmcblk1p2\1/g' $i
+      done
+      # Copy init.data2sd.rc and add entry to init.rc to call init.data2sd.rc
+      if [ -d /system/boot/data2sd ]; then
+		$BB cp /system/boot/data2sd/* /
+		$BB grep init.data2sd.rc /init.rc >/dev/null || $BB sed -i '/init.carrier.rc$/a \
+		import /init.data2sd.rc' /init.rc
+		$BB grep init.data2sd.rc /init.rc >/dev/null || $BB sed -i '/init.zombi.rc$/a \
+		import /init.data2sd.rc' /init.rc
+		$BB grep init.data2sd.rc /init.rc >/dev/null || $BB sed -i '/init.omni.rc$/a \
+		import /init.data2sd.rc' /init.rc
+	  fi
+    fi
+  else
+    echo "mmcblk1p2 detected, but not usable for Data2SD (detected fs: $FS_mmcblk1p2)."
+  fi
+fi

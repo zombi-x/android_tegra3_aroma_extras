@@ -1,0 +1,13 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# copy standard fstab that is prenit compatible
+
+BB=/system/boot/busybox
+
+
+if [ -d /system/boot/fstab ]; then
+	$BB cp /system/boot/fstab/* /
+	$BB chmod 0644 /fstab.cardhu
+else
+	echo "Using fstab in ramdisk."
+fi

@@ -1,0 +1,69 @@
+#!/system/bin/sh
+# CleanTWEAKS Basics!
+
+sleep 5
+
+#-- IO RW Tweaks --#
+
+WIN=$(find /sys/devices/virtual/bdi/*/ -name read_ahead_kb)
+MMC=`ls -d /sys/block/mmc*`;
+LOOP=`ls -d /sys/block/loop*`;
+
+echo "256" | tee $WIN
+
+# Thanks to Pure Performances Team
+# Optimize non-rotating storage;
+for i in $MMC $LOOP;
+do
+	#IMPORTANT!
+	if [ -e $i/queue/rotational ]; 
+	then
+		echo 0 > $i/queue/rotational; 
+	fi;
+	if [ -e $i/queue/nr_requests ];
+	then
+		echo 8192 > $i/queue/nr_requests; # for starters: keep it sane
+	fi;
+	
+	# deadline/VR/SIO scheduler specific
+	if [ -e $i/queue/iosched/fifo_batch ];
+	then
+		echo 1 > $i/queue/iosched/fifo_batch;
+	fi;
+	if [ -e $i/queue/iosched/writes_starved ];
+	then
+		echo 1 > $i/queue/iosched/writes_starved;
+	fi;
+
+# disable iostats to reduce overhead
+	if [ -e $i/queue/iostats ];
+	then
+		echo "0" > $i/queue/iostats;
+	fi;
+
+done;
+
+#-- Team ZOMBi CPU Tweaks --#
+
+# cpu
+# interactive governor
+echo "1" > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+echo "90" > /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load
+echo "1800000" > /sys/devices/system/cpu/cpufreq/interactive/max_boost
+echo "1150000" > /sys/devices/system/cpu/cpufreq/interactive/midrange_freq
+echo "1300000" > /sys/devices/system/cpu/cpufreq/interactive/max_normal_freq
+echo "65" > /sys/devices/system/cpu/cpufreq/interactive/midrange_go_maxspeed_load
+echo "10000" > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+echo "20000" > /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+# Default Values
+echo "80" > /sys/devices/system/cpu/cpufreq/interactive/sustain_load
+echo "2" > /sys/devices/system/cpu/cpufreq/interactive/boost_factor
+echo "1" > /sys/devices/system/cpu/cpufreq/interactive/input_boost
+
+#-- Write Log to show init.d script ran correctly --#
+if [ -e /data/local/tmp/init.d_log_test.txt ]; then
+	rm /data/local/tmp/init.d_log_test.txt;
+fi;
+
+touch /data/local/tmp/init.d_log_test.txt
+echo "ZOMBi-POP 95CleanTweaks completed at $( date +"%m-%d-%Y %H:%M:%S" )" >> /data/local/tmp/init.d_log_test.txt

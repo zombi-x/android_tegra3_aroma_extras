@@ -1,0 +1,16 @@
+# Data2SD
+on init
+
+# Create /sdcardi mounts    
+    mkdir /storage/sdcardi
+    symlink /storage/sdcardi /mnt/sdcardi
+    symlink /storage/sdcardi /sdcardi
+
+on boot
+
+# create virtual SD card at /storage/sdcardi, based on the /datai/media directory
+# deamon will drop to user/group system/media_rw after initializing
+# underlying files in /datai/media wil be created with user and group media_rw (1023)
+
+service sdcardi /system/bin/sdcard -u 1023 -g 1023 -l /datai/media /storage/sdcardi
+    class late_start

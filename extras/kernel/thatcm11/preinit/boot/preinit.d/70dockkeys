@@ -1,0 +1,10 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# if CM is used, set correct key mapping
+
+BB=/system/boot/busybox
+
+if $BB grep '^ro.cm.version=' /system/build.prop; then
+  echo "CM ROM detected, enabling CM dock key mapping."
+  echo 1 > /sys/module/asusdec/parameters/cm_mode
+fi

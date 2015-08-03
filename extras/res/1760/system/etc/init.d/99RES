@@ -1,0 +1,11 @@
+#!/system/bin/sh
+sleep 5
+wm density 220
+wm size 1760x1100
+
+if [ -e /data/local/tmp/init.d_res_test.txt ]; then
+	rm /data/local/tmp/init.d_res_test.txt;
+fi;
+
+touch /data/local/tmp/init.d_res_test.txt
+echo "Resolution set to 1760x1100 at $( date +"%m-%d-%Y %H:%M:%S" )" >> /data/local/tmp/init.d_res_test.txt

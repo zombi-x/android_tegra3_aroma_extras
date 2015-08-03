@@ -1,0 +1,13 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# set clock speeds
+
+# config
+override_edp_limit=0
+mhz_balanced=1500
+mhz_performance=1700
+[ -f /system/boot/preinit.cfg ] && . /system/boot/preinit.cfg
+
+echo $override_edp_limit > /sys/module/cpu_tegra/parameters/override_edp
+echo $mhz_balanced > /sys/module/cpu_tegra/parameters/override_mhz_bal
+echo $mhz_performance > /sys/module/cpu_tegra/parameters/override_mhz_perf

@@ -1,0 +1,27 @@
+#!/system/bin/sh
+# ZOMBi-POP Extras!
+
+sleep 5
+mount -o remount,rw /system
+
+#-- Team ZOMBi Graphics, OC and Battery Tweaks --#
+
+# graphics
+echo "0" > /sys/class/graphics/fb0/device/smartdimmer/enable
+echo "0" > /sys/kernel/tegra_cap/core_cap_state
+echo "0" > /sys/devices/gr3d/enable_3d_scaling
+setprop debug.egl.swapinterval -60
+
+# Set OC Performance Profile
+echo 0 sys/module/cpu_tegra/parameters/system_mode
+
+# Fix Google Services Battery Drain
+su -c "pm enable com.google.android.gms/.update.SystemUpdateService"
+
+#-- Write Log to show init.d script ran correctly --#
+if [ -e /data/local/tmp/init.d_log_test3.txt ]; then
+	rm /data/local/tmp/init.d_log_test3.txt;
+fi;
+
+touch /data/local/tmp/init.d_log_test3.txt
+echo "ZOMBi-POP 97CleanTweaks completed at $( date +"%m-%d-%Y %H:%M:%S" )" >> /data/local/tmp/init.d_log_test3.txt

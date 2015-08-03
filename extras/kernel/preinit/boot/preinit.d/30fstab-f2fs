@@ -1,0 +1,22 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# modify fstab for f2fs automagically
+
+BB=/system/boot/busybox
+
+# config
+#mountopts_ext4='noatime,noauto_da_alloc,nosuid,nodev,nomblk_io_submit,errors=panic'
+#mountopts_f2fs='noatime,nosuid,nodev,errors=panic'
+#[ -f /system/boot/preinit.cfg ] && . /system/boot/preinit.cfg
+
+[ -f /fs_detected ] || { echo "preinit: init didn't detect filesystems."; exit 1; }
+. /fs_detected
+
+if [ "$FS_mmcblk0p8" = "f2fs" ]; then
+  # TODO: support removing other ext4-specific mount options, support adding f2fs-specific options
+  $BB sed -i '/mmcblk0p8/{;s/ext4/f2fs/;s/barrier=.,//;s/nodiratime,//;s/noauto_da_alloc,//;s/nomblk_io_submit,//;}' /fstab.cardhu
+fi
+
+if [ "$FS_mmcblk1p2" = "f2fs" ]; then
+  $BB sed -i '/mmcblk1p2/{;s/ext4/f2fs/;s/barrier=.,//;s/nodiratime,//;s/noauto_da_alloc,//;s/nomblk_io_submit,//;}' /fstab.cardhu
+fi

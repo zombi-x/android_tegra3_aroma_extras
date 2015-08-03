@@ -1,0 +1,8 @@
+#!/system/boot/busybox sh
+# vim: ft=sh
+# modify default.prop to ro.secure=1 automagically
+
+BB=/system/boot/busybox
+
+$BB sed -i 's,ro.secure=0,ro.secure=1,g' /default.prop
+

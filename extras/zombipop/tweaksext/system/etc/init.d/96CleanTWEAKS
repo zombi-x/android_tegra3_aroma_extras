@@ -1,0 +1,84 @@
+#!/system/bin/sh
+# CleanTWEAKS Extended!
+
+sleep 5
+
+#-- Team ZOMBi Kernel, VM, FS and NET Tweaks --#
+
+# fs
+/system/xbin/sysctl -w fs.file-max=65336
+/system/xbin/sysctl -w fs.inotify.max_queued_events=32768
+/system/xbin/sysctl -w fs.inotify.max_user_instances=256
+/system/xbin/sysctl -w fs.inotify.max_user_watches=10240
+/system/xbin/sysctl -w fs.lease-break-time=10
+
+# kernel
+/system/xbin/sysctl -w kernel.random.read_wakeup_threshold=1024
+/system/xbin/sysctl -w kernel.random.write_wakeup_threshold=2048
+/system/xbin/sysctl -w kernel.threads-max=5000
+/system/xbin/sysctl -w kernel.sem="500 512000 64 2048"
+/system/xbin/sysctl -w kernel.shmmax=268435456
+/system/xbin/sysctl -w kernel.shmall=2097152
+/system/xbin/sysctl -w kernel.shmmni=4096
+/system/xbin/sysctl -w kernel.msgmni=2048
+/system/xbin/sysctl -w kernel.msgmax=64000
+/system/xbin/sysctl -w kernel.panic=10
+/system/xbin/sysctl -w kernel.panic_on_oops=0
+
+# vm
+/system/xbin/sysctl -w vm.swappiness=0
+/system/xbin/sysctl -w vm.dirty_ratio=70
+#/system/xbin/sysctl -w vm.dirty_ratio=80
+/system/xbin/sysctl -w vm.dirty_background_ratio=35
+#/system/xbin/sysctl -w vm.dirty_background_ratio=10
+#/system/xbin/sysctl -w vm.dirty_expire_centisecs=3000
+/system/xbin/sysctl -w vm.dirty_expire_centisecs=500
+#/system/xbin/sysctl -w vm.dirty_writeback_centisecs=500
+/system/xbin/sysctl -w vm.dirty_writeback_centisecs=100
+/system/xbin/sysctl -w vm.min_free_kbytes=5120
+#/system/xbin/sysctl -w vm.min_free_kbytes=8192
+/system/xbin/sysctl -w vm.vfs_cache_pressure=10
+#/system/xbin/sysctl -w vm.vfs_cache_pressure=500
+/system/xbin/sysctl -w vm.oom_kill_allocating_task=0
+/system/xbin/sysctl -w vm.overcommit_memory=1
+/system/xbin/sysctl -w vm.overcommit_ratio=30
+/system/xbin/sysctl -w vm.min_free_order_shift=4
+/system/xbin/sysctl -w vm.block_dump=0
+/system/xbin/sysctl -w vm.oom_dump_tasks=1
+#/system/xbin/sysctl -w vm.page-cluster=3
+/system/xbin/sysctl -w vm.page-cluster=0
+/system/xbin/sysctl -w vm.panic_on_oom=0
+/system/xbin/sysctl -w vm.block_dump=0
+#/system/xbin/sysctl -w vm.dirty_bytes=2048000
+#/system/xbin/sysctl -w vm.dirty_background_bytes=1024000
+#/system/xbin/sysctl -w vm.drop_caches=3
+
+#-- Net Tweaks --#
+/system/xbin/sysctl -w net.ipv4.tcp_congestion_control=lp
+/system/xbin/sysctl -w net.ipv4.tcp_mem="4000000 4054304 4194304"
+/system/xbin/sysctl -w net.ipv4.udp_mem="4000000 4054304 4194304"
+/system/xbin/sysctl -w net.core.somaxconn=65536
+/system/xbin/sysctl -w net.core.optmem_max=524288
+/system/xbin/sysctl -w net.core.rmem_max=524288
+#/system/xbin/sysctl -w net.core.rmem_max=4194304
+/system/xbin/sysctl -w net.core.rmem_default=112640
+#/system/xbin/sysctl -w net.core.wmem_max=2097152
+/system/xbin/sysctl -w net.core.wmem_max=524288
+/system/xbin/sysctl -w net.core.wmem_default=112640
+/system/xbin/sysctl -w net.ipv4.tcp_rmem="8192 131072 524288"
+/system/xbin/sysctl -w net.ipv4.tcp_wmem="4096 16384  524288"
+/system/xbin/sysctl -w net.ipv4.udp_rmem_min=8192
+/system/xbin/sysctl -w net.ipv4.udp_wmem_min=4096
+/system/xbin/sysctl -w net.ipv4.tcp_tw_reuse=1
+/system/xbin/sysctl -w net.ipv4.tcp_tw_recycle=1
+/system/xbin/sysctl -w net.ipv4.route.flush=1
+/system/xbin/sysctl -w net.ipv6.route.flush=1
+/system/xbin/sysctl -w net.ipv4.tcp_mtu_probing=1
+
+#-- Write Log to show init.d script ran correctly --#
+if [ -e /data/local/tmp/init.d_log_test2.txt ]; then
+	rm /data/local/tmp/init.d_log_test2.txt;
+fi;
+
+touch /data/local/tmp/init.d_log_test2.txt
+echo "ZOMBi-POP 96CleanTweaks completed at $( date +"%m-%d-%Y %H:%M:%S" )" >> /data/local/tmp/init.d_log_test2.txt

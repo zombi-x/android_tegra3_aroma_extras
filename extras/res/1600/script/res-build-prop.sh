@@ -1,0 +1,5 @@
+#!/sbin/sh
+sed -i 's, test-keys, test-keys-1600x1000,g' /system/build.prop
+sed -i 's, test-keys-SBDAGS-SBDAGS, test-keys-SBDAGS,g' /system/build.prop
+sed -i 's, test-keys-SBDAGS-INFINTY, test-keys-SBDAGS,g' /system/build.prop
+sed -i 's, test-keys-SBDAGS-PRIME, test-keys-SBDAGS,g' /system/build.prop

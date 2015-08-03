@@ -1,0 +1,32 @@
+# minimal init.rc
+
+on early-init
+    start ueventd
+
+on init
+    sysclktz 0
+    export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib
+
+on fs
+    mount ext4 /dev/block/mmcblk0p8 /system ro
+
+# on post-fs
+
+# on post-fs-data
+
+on boot
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 0B05
+    write /sys/class/android_usb/android0/idProduct 4C91
+    write /sys/class/android_usb/android0/functions adb
+    write /sys/class/android_usb/android0/enable 1
+    start adbd
+    start console
+
+service adbd /sbin/adbd
+
+service ueventd /sbin/ueventd
+
+service console /system/bin/sh
+    console
